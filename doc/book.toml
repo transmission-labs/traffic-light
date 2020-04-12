@@ -1,0 +1,10 @@
+[book]
+authors = ["Jake Howard"]
+language = "en"
+multilingual = false
+src = "src"
+title = "traffic-light"
+
+[output.html]
+
+[output.linkcheck]  # enable the "mdbook-linkcheck" renderer
