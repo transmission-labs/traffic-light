@@ -1,4 +1,7 @@
 # Summary
 
 - [Introduction](./introduction.md)
-- [Roadmap](./roadmap.md)
+  - [Capabilities](./capabilities.md)
+  - [Technology](./technology.md)
+  - [Roadmap](./roadmap.md)
+  - [Testing](./testing.md)
