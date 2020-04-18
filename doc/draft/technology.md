@@ -16,7 +16,7 @@ Vehicles need to be able to communicate directly in a reliable fashion and in ne
 
 ### Hardware
 
-For junction negotiation and object detection, it's assumed that hardware exists, or could be built, that would allow vehicles within 100m of each other to open a direct channel of communication, allowing them to pass messages using TC with very low latency. See [Long range WiFi](https://en.wikipedia.org/wiki/Long-range_Wi-Fi), [Municipal wireless network](https://en.wikipedia.org/wiki/Municipal_wireless_network), [Bluetooth](https://en.wikipedia.org/wiki/Bluetooth).
+For junction negotiation and object detection, it's assumed that hardware exists, or could be built, that would allow vehicles within 100m of each other to open a direct channel of communication, allowing them to pass messages using TCP with very low latency. See [Long range WiFi](https://en.wikipedia.org/wiki/Long-range_Wi-Fi), [Municipal wireless network](https://en.wikipedia.org/wiki/Municipal_wireless_network), [Bluetooth](https://en.wikipedia.org/wiki/Bluetooth).
 
 For drafting, the latency and specifics around connection handling and reliability in current wireless systems may have a significant impact on safety. It seems feasible that a more reliable and faster vehicle to vehicle communication link could be set up using a laser or something similar, see: [Optical networking - free space optical networks](https://en.wikipedia.org/wiki/Optical_networking#Free-space_optical_networks). The vehicle also needs to be able to reliably sense its own speed and the distance between it and the vehicle in front.
 

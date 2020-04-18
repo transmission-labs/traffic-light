@@ -1,12 +1,12 @@
-# Introduction (requires proof read)
+# Introduction
 
-`traffic-light` is a software project, currently in vaporware mode, exploring ways to increase the efficiency of traffic on the road network.
+`traffic-light` is a project exploring ways to increase the efficiency of the road network.
 
 If `traffic-light` had a stated goal it would be:
 
 > Increase the efficiency of the road network, especially in cities, by providing vehicles with the technology to share information with each other.
 
-Stated another way, we believe that networked vehicles offer significant advantages over independent agents following a single, static rule system (e.g. the highway code). We're also aware of the impact this may have on privacy and look to find ways to mitigate that impact or make sensible trade offs to balance efficiency with privacy.
+Stated another way, we believe that networked vehicles offer significant advantages over independent agents following a single, static rule system (e.g. the highway code). We're also aware of the impact this may have on privacy and look to mitigate that impact or make sensible trade offs to balance efficiency with privacy.
 
 Examples of things that become possible include: much better fuel efficiency, higher top speed, reduced need to wait at traffic lights, superior route planning and better object detection.
 
