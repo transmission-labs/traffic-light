@@ -30,8 +30,12 @@ If you get lost in a fog of detail, all of the following simply enables:
 - **Format:** TODO: specify format
 
 ### Route planning
-- **Initial**: the vehicle MUST accept a destination and create an initial route plan.
-- **Update**: the vehicle MUST update its route plan based on information received.
+- **Initial:** the vehicle MUST accept a destination and create an initial route plan.
+- **Update:** the vehicle MUST update its route plan based on information received.
+- **Map:** the vehicle MUST read and use the map provided in configuration.
+
+### Mapping
+- TODO: specify the map format.
 
 ### Telemetry
 - The vehicle MUST push telemetry to a socket/module provided in configuration (TODO: details to follow).
@@ -48,7 +52,34 @@ If you get lost in a fog of detail, all of the following simply enables:
 
 ## The simulator
 
-_work in progress_
+- MUST work in a language agnostic manner (but not necessarily platform agnostic)
+
+### Spawning
+- MUST spawn vehicles (processes).
+- MUST set up and facilitate vehicle to vehicle communication (via sockets or similar).
+- MUST set up and facilitate simulator to vehicle communication.
+- MUST wait 5 seconds for a route to be provided by the vehicle on the telemetry socket
+  - If no route is provided, terminate the vehicle process and log an error.
+- MUST send a destination to the vehicle.
+- MUST immediately start sending the stream of GPS coordinates representing the location of the vehicle (starting point).
+
+### Moving
+
+- MUST move the vehicle along the route provided by the vehicle
+  - by passing in updated GPS coordinates
+  - going at the speed limit of the road
+  - waiting at traffic lights
+  - stopping at give way junctions
+  - without vehicles hitting each other
+  - slowing down if the traffic becomes congested
+- SHOULD
+  - NOT magically accelerate to top speed when pulling away from a standstill
+
+### Map
+- MUST use a map provided in `traffic-light` format
+  - TODO: map format spec
+- MUST pass the same map to all vehicles
+
 
 ### Test cases
 
@@ -57,6 +88,62 @@ _work in progress_
 ### Visualisation
 
 _work in progress_
+
+## Map
+
+The plan is to use [openstreetmap.org](https://www.openstreetmap.org/) [exports](https://download.openstreetmap.fr/extracts/) to build the maps used by the simulators. At first glance it appears it would be beneficial to create our own mapping format that allows for clear and performant use of the data, rather than parsing osm XML directly. This way we can create separate utility that converts osm XML to our format and prevent the vehicle code or simulator logic becoming complex and coupled.
+
+The map has two interpretations: a physical interpretation which corresponds to reality and is most amenable to drawing; a logical interpretation that allows for clear code around decision making. For example, the logical interpretation is a graph, where nodes represent junctions and edges represent road segments, that makes it simple to annotate concepts such as "no left turn between edge-a and edge-b". It's possible that all the physical information can be added to the logical one and we have a single format.
+
+### Logical representation
+
+The below is represented in EDN because it's concise and expressive. You could easily imagine it as JSON, a struct, etc.
+
+```clojure
+;; Simple example map
+;; Drive on right hand side
+
+;;      | 2 |
+;;      |   |
+;;->->--  | |
+;;__3___    |
+;;      | 1 |
+;;      |   |
+;;      | | |
+
+;; Node
+{:type :give-way-junction
+ :edges [1 2 3]
+ :relations [{:from 1 :to 3 :relation :no-turn :description "No left turn"}
+             {:from 2 :to 3 :relation :no-turn :description "No right turn"}
+             {:from 3 :to 1 :relation :give-way}
+             {:from 3 :to 2 :relation :give-way}
+             {:from 1 :to 2 :relation :flow}
+             {:from 2 :to 1 :relation :flow}]}
+
+;; Edge examples
+{:id 1
+ :way-name "St Nicholas Way"
+ :segment-number 1
+ :direction {:type :two-way}
+ :speed-limit {:value 50 :units :mph}
+ :points [{:lat 50.0 :lon 0.0} {:lat 50.1 :lon 0.0} {:lat 50.2 :lon 0.0}]}
+
+{:id 2
+ :way-name "St Nicholas Way"
+ :segment-number 2
+ :direction {:type :two-way}
+ :speed-limit {:value 50 :units :mph}
+ :points [{:lat 50.3 :lon 0.0} {:lat 50.4 :lon 0.0} {:lat 50.5 :lon 0.0}]}
+
+{:id 3
+ :way-name "Side St Road"
+ :segment-number 1
+ :direction {:type :one-way :from {:lat 50.2 :lon -0.2} :to {:lat 1.23 :lon 0.0}}
+ :speed-limit {:value 30 :units :mph}
+ :points [{:lat 50.2 :lon 0.0} {:lat 50.2 :lon -0.1} {:lat 50.2 :lon -0.2}]}
+```
+
 
 ## Limits
 

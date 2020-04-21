@@ -1,0 +1,42 @@
+;; Simple example map
+;; Drive on right hand side
+
+;;      | 2 |
+;;      |   |
+;;->->--  | |
+;;__3___    |
+;;      | 1 |
+;;      |   |
+;;      | | |
+
+;; Node
+{:type :give-way-junction
+ :edges [1 2 3]
+ :relations [{:from 1 :to 3 :relation :no-turn :description "No left turn"}
+             {:from 2 :to 3 :relation :no-turn :description "No right turn"}
+             {:from 3 :to 1 :relation :give-way}
+             {:from 3 :to 2 :relation :give-way}
+             {:from 1 :to 2 :relation :flow}
+             {:from 2 :to 1 :relation :flow}]}
+
+;; Edge examples
+{:id 1
+ :way-name "St Nicholas Way"
+ :segment-number 1
+ :direction {:type :two-way}
+ :speed-limit {:value 50 :units :mph}
+ :points [{:lat 50.0 :lon 0.0} {:lat 50.1 :lon 0.0} {:lat 50.2 :lon 0.0}]}
+
+{:id 2
+ :way-name "St Nicholas Way"
+ :segment-number 2
+ :direction {:type :two-way}
+ :speed-limit {:value 50 :units :mph}
+ :points [{:lat 50.3 :lon 0.0} {:lat 50.4 :lon 0.0} {:lat 50.5 :lon 0.0}]}
+
+{:id 3
+ :way-name "Side St Road"
+ :segment-number 1
+ :direction {:type :one-way :from {:lat 50.2 :lon -0.2} :to {:lat 1.23 :lon 0.0}}
+ :speed-limit {:value 30 :units :mph}
+ :points [{:lat 50.2 :lon 0.0} {:lat 50.2 :lon -0.1} {:lat 50.2 :lon -0.2}]}
