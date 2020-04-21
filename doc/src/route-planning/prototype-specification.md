@@ -17,41 +17,42 @@ If you get lost in a fog of detail, all of the following simply enables:
 
 ### Vehicle to vehicle connection
 
-- **Scanning:** the vehicle MUST constantly scan for other vehicles and attempt to open a connection with them[^1].
-  - Each vehicle MUST do all network communication via a socket/module (details provided in configuration) (TODO: details of type of socket/module etc).
-  - Each vehicle MUST be able to receive information about new connections (new vehicles that have be "found" by scanning) on the socket. Vehicles (connections) identified by UUIDv4.
-  - Each vehicle MUST use this socket/module to _request_ data transfer and listen to requests from another vehicle (open/negotiate connection, receive/send stream of bytes).
+- **Scanning:** MUST constantly scan for other vehicles and attempt to open a connection with them[^1].
+  - MUST do all network communication via a socket/module (details provided in configuration) (TODO: details of type of socket/module etc).
+  - MUST be able to receive information about new connections (new vehicles that have be "found" by scanning) on the socket. Vehicles (connections) identified by UUIDv4.
+  - MUST use this socket/module to _request_ data transfer and listen to requests from another vehicle (open/negotiate connection, receive/send stream of bytes).
 
 ### Data transfer
-- **Requesting info:** the vehicle MUST request information from connections that become known to it.
+- **Requesting info:** MUST request information from connections that become known to it.
   - The request CAN provide information about where the requesting vehicle is heading (to be used for prioritisation).
-- **Sending:** the vehicle MUST be able to receive requests and send _prioritised_ information to other vehicles.
+- **Sending:** MUST be able to receive requests and send _prioritised_ information to other vehicles.
   - The information MUST be prioritised by location and recipient heading (if provided).
 - **Format:** TODO: specify format
 
 ### Route planning
-- **Initial:** the vehicle MUST accept a destination and create an initial route plan.
-- **Update:** the vehicle MUST update its route plan based on information received.
-- **Map:** the vehicle MUST read and use the map provided in configuration.
+- **Initial:** MUST accept a destination and create an initial route plan.
+- **Update:** MUST update its route plan based on information received.
+- **Map:** MUST read and use the map provided in configuration.
 
 ### Mapping
-- TODO: specify the map format.
+- MUST be compliant with the latest version of the map specification (below).
+- MUST be able to detect and report errors on logical issues with the map
 
 ### Telemetry
-- The vehicle MUST push telemetry to a socket/module provided in configuration (TODO: details to follow).
-  - The vehicle MUST send its route when it first calculates it.
-  - The vehicle MUST send the new route if it updates the route.
+- MUST push telemetry to a socket/module provided in configuration (TODO: details to follow).
+  - MUST send its route when it first calculates it.
+  - MUST send the new route if it updates the route.
+  - MUST respond to a request for its internal state (what it thinks it knows about the world and who told it what).
 
 ### Sensors
-- Each vehicle MUST be able to receive sensor information by listening to a socket/module (details provided in configuration) (TODO: details of type of socket/module etc)
-  - **GPS**: the vehicle MUST accept a stream of GPS coordinates.[^2]
-  - **Immediate surroundings information**: the vehicle SHOULD accept a stream of information about its surroundings[^3].
+- MUST be able to receive sensor information by listening to a socket/module (details provided in configuration) (TODO: details of type of socket/module etc)
+  - **GPS**: MUST accept a stream of GPS coordinates.[^2]
+  - **Immediate surroundings information**: SHOULD accept a stream of information about its surroundings[^3].
 
 ### Trust
-- **Incorrect information:** the vehicle SHOULD be able to assign a trust score to information it receives and incorporate that into its route planning.
+- **Incorrect information:** SHOULD be able to assign a trust score to information it receives and incorporate that into its route planning.
 
 ## The simulator
-
 - MUST work in a language agnostic manner (but not necessarily platform agnostic)
 
 ### Spawning
@@ -72,18 +73,26 @@ If you get lost in a fog of detail, all of the following simply enables:
   - stopping at give way junctions
   - without vehicles hitting each other
   - slowing down if the traffic becomes congested
+  - remove the vehicle when it's reached its destination
 - SHOULD
   - NOT magically accelerate to top speed when pulling away from a standstill
 
-### Map
-- MUST use a map provided in `traffic-light` format
-  - TODO: map format spec
-- MUST pass the same map to all vehicles
+### Telemetry
+- MUST stream the simulation data for each tick
+  - Location of all vehicles
+  - Routes of all vehicles
+  - Internal state of all vehicles
 
+### Map
+- MUST be compliant with the latest version of the map specification (below).
+- MUST use a single map and pass the same map to all vehicles.
+- MUST be able to detect and report errors on logical issues with the map
 
 ### Test cases
 
-_work in progress_
+#### Smoke tests
+1. Given a vehicle, with a starting point and destination, the vehicle takes the obviously best route.
+2. Blocking the obviously best route with congestion causes the vehicle to re-route along what would be an obviously worse route but has now become better.
 
 ### Visualisation
 
@@ -94,6 +103,16 @@ _work in progress_
 The plan is to use [openstreetmap.org](https://www.openstreetmap.org/) [exports](https://download.openstreetmap.fr/extracts/) to build the maps used by the simulators. At first glance it appears it would be beneficial to create our own mapping format that allows for clear and performant use of the data, rather than parsing osm XML directly. This way we can create separate utility that converts osm XML to our format and prevent the vehicle code or simulator logic becoming complex and coupled.
 
 The map has two interpretations: a physical interpretation which corresponds to reality and is most amenable to drawing; a logical interpretation that allows for clear code around decision making. For example, the logical interpretation is a graph, where nodes represent junctions and edges represent road segments, that makes it simple to annotate concepts such as "no left turn between edge-a and edge-b". It's possible that all the physical information can be added to the logical one and we have a single format.
+
+The map v1 MUST be able to express:
+- one way roads
+- two way roads
+- multiple lanes (in one direction)
+- give way junctions
+- n way junctions controlled by traffic lights
+- no left turn
+- no right turn
+- combinations (where appropriate) of all options
 
 ### Logical representation
 
